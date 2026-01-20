@@ -1,9 +1,3 @@
-"""
-Code indexer using inverted index for fast searching.
-
-An inverted index maps tokens to their locations in code.
-Think of it like a book index: word → page numbers.
-"""
 
 import json
 import time
@@ -14,6 +8,7 @@ import logging
 
 from parser import CodeParser
 from tokenizer import Tokenizer
+from tqdm import tqdm 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -133,16 +128,7 @@ class CodeIndexer:
             self.stats['total_tokens'] += 1
     
     def index_directory(self, directory: str, pattern: str = "**/*.py") -> int:
-        """
-        Index all Python files in a directory.
-        
-        Args:
-            directory: Path to directory
-            pattern: Glob pattern for files (default: **/*.py)
-            
-        Returns:
-            Number of files successfully indexed
-        """
+     
         start_time = time.time()
         
         directory_path = Path(directory)
@@ -157,18 +143,24 @@ class CodeIndexer:
             logger.warning(f"No Python files found in {directory}")
             return 0
         
-        logger.info(f"Found {len(python_files)} Python files")
+        print(f"\n🔍 Found {len(python_files)} Python files\n")
         
-        # Index each file
+        # Index each file with progress bar
         successful = 0
-        for filepath in python_files:
-            if self.index_file(str(filepath)):
-                successful += 1
+        with tqdm(total=len(python_files), 
+                  desc="Indexing", 
+                  unit="file",
+                  bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]') as pbar:
+            
+            for filepath in python_files:
+                if self.index_file(str(filepath)):
+                    successful += 1
+                pbar.update(1)
         
         self.stats['index_time'] = time.time() - start_time
         
-        logger.info(f"Indexed {successful}/{len(python_files)} files in "
-                   f"{self.stats['index_time']:.2f}s")
+        print(f"\n✅ Indexed {successful}/{len(python_files)} files in "
+              f"{self.stats['index_time']:.2f}s\n")
         
         return successful
     
