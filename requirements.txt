@@ -9,6 +9,7 @@ tqdm==4.66.1
 
 # Performance
 msgpack==1.0.7
+psutil==5.9.8
 
 # Development
 pytest==7.4.3
