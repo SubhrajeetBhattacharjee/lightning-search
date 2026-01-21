@@ -70,34 +70,44 @@ python search.py  # Uses flask_index.json by default
 
 ## 📊 Benchmarks
 
-Tested on **Flask framework** (83 files, 18,240 lines of Python):
+Benchmarked on real open-source Python codebases using **Tree-sitter AST parsing + inverted-index search**.
 
-### Indexing Performance
-| Metric | Value |
-|--------|-------|
-| **Indexing Speed** | 436.6 files/sec |
-| **Throughput** | 95,944 lines/sec |
-| **Total Time** | 0.19 seconds |
-| **Memory Usage** | 6.5 MB peak |
-| **Index Size** | 1.12 MB (16.3x compression) |
+**Test machine:** Windows 11 • Python 3.12 • Intel i5 • 32GB RAM  
+**Method:** 10-iteration averages (query benchmark excludes printing/I/O)
 
-### Search Performance
-| Metric | Value |
-|--------|-------|
-| **Index Load Time** | 20.28ms (one-time) |
-| **Average Query Time** | 0.030ms (30 microseconds!) |
-| **Query Throughput** | 33,000+ queries/second |
+---
 
-### Comparison to Industry Tools
-| Tool | Query Time | Your Tool |
-|------|------------|-----------|
-| **grep** | 100-1000ms | 0.030ms ✅ |
-| **GitHub Code Search** | 500-2000ms | 0.030ms ✅ |
-| **ripgrep** | 50-200ms | 0.030ms ✅ |
-| **Lightning Search** | **0.030ms** | 🏆 **500x FASTER** |
+### ⚡ Indexing Performance (Cold Index Build)
 
-*Benchmarked on: Windows 11, Python 3.12, Intel i7, 16GB RAM*  
-*All measurements are 10-iteration averages for accuracy*
+| Project | Files | LOC | Index Time | Throughput (LOC/s) | Index Size |
+|--------|------:|----:|----------:|-------------------:|----------:|
+| Flask | 83 | 18,240 | 0.17s | 105,598 | 1.12 MB |
+| Requests | 36 | 11,248 | 0.10s | 108,436 | 0.84 MB |
+| Django | 2,887 | 507,569 | 5.15s | 98,572 | 37.21 MB |
+| pandas | 1,511 | 651,368 | 6.26s | 104,007 | 30.76 MB |
+
+✅ Scales to **~650k LOC** with **~100k LOC/s** sustained indexing throughput.
+
+---
+
+### 🔍 Search Performance (Warm Queries)
+
+| Project | Index Load Time | Avg Query Time |
+|--------|----------------:|---------------:|
+| Flask | 18ms | 0.042ms |
+| Requests | 18ms | 0.036ms |
+| Django | 229ms | 0.246ms |
+| pandas | 192ms | 0.126ms |
+
+✅ Sub-millisecond query latency even on **500k–650k LOC** repositories.
+
+---
+
+### Notes
+- **Indexing time** includes file discovery + parsing + tokenization + index build + save  
+- **Query time** measures in-memory index lookup only (**excludes terminal output formatting**)  
+- Results may vary based on CPU, disk speed, and OS caching
+
 
 ## 🏗️ How It Works
 
