@@ -5,6 +5,7 @@ from pathlib import Path
 from __version__ import __version__
 from indexer import CodeIndexer
 from search import CodeSearch
+from cfg_analyzer import CFGAnalyzer
 
 
 def cmd_index(args):
@@ -143,6 +144,75 @@ def cmd_stats(args):
     return 0
 
 
+def cmd_cfg(args):
+    """Analyze control flow of functions in a file."""
+    from pathlib import Path
+    
+    if not Path(args.file).exists():
+        print(f"\n❌ File not found: {args.file}\n")
+        return 1
+    
+    analyzer = CFGAnalyzer()
+    
+    if args.function:
+        # Analyze specific function
+        print(f"\n⚡ Lightning Search - CFG Analysis")
+        print("=" * 60)
+        print(f"\n🔍 Analyzing function: {args.function}")
+        print(f"📄 File: {args.file}\n")
+        
+        cfg = analyzer.analyze_function(args.file, args.function)
+        
+        if cfg:
+            cfg.print_graph()
+            
+            # Show paths
+            paths = cfg.get_all_paths()
+            if paths:
+                print(f"\n📊 Execution Paths ({len(paths)} total):\n")
+                for i, path in enumerate(paths[:10], 1):  # Show first 10
+                    path_str = ' → '.join(f'Block{b}' for b in path)
+                    print(f"  Path {i}: {path_str}")
+                
+                if len(paths) > 10:
+                    print(f"\n  ... and {len(paths) - 10} more paths")
+                print()
+            
+            # Show complexity
+            stats = cfg.get_stats()
+            complexity = stats['edges'] - stats['blocks'] + 2
+            
+            print(f"📈 Metrics:")
+            print(f"   Cyclomatic Complexity: {complexity}")
+            print(f"   Basic Blocks: {stats['blocks']}")
+            print(f"   Edges: {stats['edges']}")
+            print(f"   Execution Paths: {stats['paths']}")
+            print()
+        else:
+            print(f"\n❌ Function '{args.function}' not found in {args.file}\n")
+        
+    else:
+        # Analyze all functions
+        print(f"\n⚡ Lightning Search - CFG Analysis")
+        print("=" * 60)
+        print(f"\n🔍 Analyzing: {args.file}\n")
+        
+        cfgs = analyzer.analyze_file(args.file)
+        
+        if cfgs:
+            analyzer.print_summary(cfgs)
+            
+            if args.detailed:
+                # Show detailed CFG for each function
+                for cfg in cfgs:
+                    print(f"\n{'=' * 60}")
+                    cfg.print_graph()
+        else:
+            print("\n❌ No functions found in file\n")
+    
+    return 0
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -166,6 +236,13 @@ Examples:
   python cli.py stats -i myproject.index
 
 Pro tip: Use interactive mode for exploring large codebases!
+
+  # Analyze control flow (NEW!)
+  python cli.py cfg myfile.py
+  python cli.py cfg myfile.py -f function_name
+  python cli.py cfg myfile.py --detailed
+
+Pro tip: Use CFG analysis to understand code complexity!
 
 Project: https://github.com/SubhrajeetBhattacharjee/lightning-search
         """
@@ -198,6 +275,14 @@ Project: https://github.com/SubhrajeetBhattacharjee/lightning-search
     parser_stats = subparsers.add_parser('stats', help='Show index statistics')
     parser_stats.add_argument('-i', '--index', default='index.json', help='Index file (default: index.json)')
     parser_stats.set_defaults(func=cmd_stats)
+
+       # CFG command (ADD THIS)
+    parser_cfg = subparsers.add_parser('cfg', help='Analyze control flow graphs')
+    parser_cfg.add_argument('file', help='Python file to analyze')
+    parser_cfg.add_argument('-f', '--function', help='Specific function name (optional)')
+    parser_cfg.add_argument('-d', '--detailed', action='store_true', 
+                           help='Show detailed CFG for all functions')
+    parser_cfg.set_defaults(func=cmd_cfg)
     
     # Parse arguments
     args = parser.parse_args()
