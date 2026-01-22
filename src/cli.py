@@ -146,16 +146,28 @@ def cmd_stats(args):
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        description="⚡ Lightning Search - AI-powered code search",
+        description="⚡ Lightning Search - Blazingly fast code search for Python",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  lightning index ./myproject              # Index a project
-  lightning search "render_template"       # Search the index
-  lightning interactive                    # Interactive mode
-  lightning stats                          # Show index stats
+  # Index your project
+  python cli.py index ./myproject -o myproject.index
+  
+  # Quick search
+  python cli.py search "render_template" -i myproject.index
+  
+  # Search with more results
+  python cli.py search "database" -i myproject.index -l 50
+  
+  # Interactive mode (best for exploration)
+  python cli.py interactive -i myproject.index
+  
+  # Check index stats
+  python cli.py stats -i myproject.index
 
-For more info: https://github.com/SubhrajeetBhattacharjee/lightning-search
+Pro tip: Use interactive mode for exploring large codebases!
+
+Project: https://github.com/SubhrajeetBhattacharjee/lightning-search
         """
     )
     
