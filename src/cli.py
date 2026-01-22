@@ -2,7 +2,7 @@
 import sys
 import argparse
 from pathlib import Path
-
+from __version__ import __version__
 from indexer import CodeIndexer
 from search import CodeSearch
 
@@ -170,7 +170,8 @@ Pro tip: Use interactive mode for exploring large codebases!
 Project: https://github.com/SubhrajeetBhattacharjee/lightning-search
         """
     )
-    
+    parser.add_argument('--version', action='version', 
+                       version=f'Lightning Search v{__version__}')
     subparsers = parser.add_subparsers(dest='command', help='Command to run')
     
     # Index command
