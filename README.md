@@ -1,353 +1,339 @@
+
 # ⚡ Lightning Search
 
 **Stop waiting. Start finding.**
 
-A blazingly fast code search and analysis tool for Python projects. Built because I got tired of grep taking 30 seconds to search my codebase.
+Lightning Search is a **blazingly fast code search + static analysis tool for Python**.  
+It indexes a codebase once and gives you **instant search**, plus **Control Flow Graph (CFG)** and **cyclomatic complexity** analysis.
 
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+> Think: **grep speed + code intelligence.**
+
+![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-yellow.svg)
 
 ---
 
-## The Problem
+## Why Lightning Search?
 
-Ever been in this situation?
-```bash$ grep -r "render_template" my-project/
-... stares at screen for 30 seconds ...
-... finally gets results ...
-... but grep doesn't understand code structure ...
+Ever done this?
 
-Or tried GitHub's code search and got rate-limited? Or used an IDE's search that chokes on large projects?
+```bash
+$ grep -r "render_template" my-project/
+# ... waits ...
+# ... results finally appear ...
+# ... but it doesn't understand code structure ...
+````
 
-Yeah, me too. So I built Lightning Search.
+Or GitHub search rate-limits you. Or your IDE struggles on large repos.
+
+Lightning Search exists because **searching code should feel instant**.
 
 ---
 
 ## What It Does
 
 Lightning Search indexes your Python codebase once, then lets you:
-- 🔍 **Search instantly** (0.03ms - yes, milliseconds)
-- 📊 **Analyze complexity** (cyclomatic complexity, control flow)
-- 🎯 **Find definitions** (not just text matches)
-- 🧠 **Understand structure** (functions, classes, call graphs)
 
-Think of it as "grep that actually understands your code."
+* ⚡ **Search instantly** (sub-millisecond query times)
+* 🎯 **Find definitions** (functions, classes, imports)
+* 🧠 **Understand structure** using AST parsing (Tree-sitter)
+* 📊 **Analyze control flow** using CFG generation
+* 🧮 **Compute cyclomatic complexity** for real functions
 
 ---
 
 ## Quick Start
-```bashClone and setup
+
+### 1) Clone and install
+
+```bash
 git clone https://github.com/SubhrajeetBhattacharjee/lightning-search.git
 cd lightning-search
-pip install -r requirements.txtIndex your project
+pip install -r requirements.txt
+```
+
+### 2) Index a project
+
+```bash
 cd src
-python cli.py index ../your-project -o project.indexSearch
-python cli.py search "your_function" -i project.indexOr use interactive mode
+python cli.py index ../your-project -o project.index
+```
+
+### 3) Search
+
+```bash
+python cli.py search "render_template" -i project.index
+```
+
+### 4) Interactive mode (recommended)
+
+```bash
 python cli.py interactive -i project.index
+```
+
+### 5) View index stats
+
+```bash
+python cli.py stats -i project.index
+```
 
 ---
 
-## Real-World Performance
+## Real-World Performance (Benchmarked)
 
-I tested this on actual production codebases. Here's what happened:
+Benchmarked on: **Windows 11 • Python 3.12 • Intel i5 13th Gen • 32GB RAM**
+All values are averages across multiple runs.
 
-| Project | Lines of Code | Index Time | Search Time | vs grep |
-|---------|--------------|------------|-------------|---------|
-| Flask | 18k | 0.19s | 0.042ms | **500x faster** |
-| Django | 508k | 5.15s | 0.246ms | **400x faster** |
-| pandas | 651k | 6.26s | 0.126ms | **500x faster** |
+| Project |  LOC | Index Time | Avg Search Time |
+| ------: | ---: | ---------: | --------------: |
+|   Flask |  18k |      0.17s |          0.04ms |
+|  Django | 508k |      5.15s |          0.25ms |
+|  pandas | 651k |      6.26s |          0.13ms |
 
-**Yes, that's 651,000 lines indexed in 6 seconds.**
+**651,000 lines indexed in ~6 seconds** and queries in **microseconds**.
 
-And searches that complete in 0.1 milliseconds.
-
----
-
-## Features That Actually Matter
-
-### 🚀 Fast Indexing
-- **100,000+ lines per second**
-- Processes pandas (651k lines) in 6 seconds
-- Scales linearly - no degradation at size
-
-### ⚡ Instant Search
-- **Sub-millisecond queries** (0.03-0.25ms)
-- Even on massive codebases
-- 500x faster than grep
-
-### 🧠 Smart Analysis
-- **Control Flow Graphs** - see all execution paths
-- **Cyclomatic Complexity** - measure code complexity
-- **Semantic understanding** - knows functions from imports
-
-### 💾 Efficient Storage
-- **16-21x compression ratio**
-- 30MB index for 651k lines
-- JSON format (human-readable, debuggable)
-
-### 🎨 Clean Interface
-- Beautiful CLI with colors and progress bars
-- Interactive mode for exploration
-- Multiple output formats
-
----
-
-## What Makes This Different?
-
-**Most code search tools:**
-- Use text matching (fast but dumb)
-- Or use heavyweight databases (smart but slow)
-
-**Lightning Search:**
-- Parses code properly (Tree-sitter AST)
-- Uses inverted indices (O(1) lookup)
-- Combines speed AND intelligence
-
-It's the Goldilocks solution: fast enough for real-time, smart enough to understand code.
+> Note: These timings reflect **index-based lookup**, not raw file scanning.
 
 ---
 
 ## Examples
 
-### Basic Search
-```bash$ python cli.py search "render_template" -i flask.index🔍 Found 18 results in 0.042ms📄 flask/templating.py
-⚡ Line  135: render_template
-⚡ Line  150: render_template_string📄 flask/helpers.py
-⚡ Line  123: _render
+### 🔍 Basic Search
 
-### Complexity Analysis
-```bash$ python cli.py cfg flask/app.py📊 CFG Analysis Summary
-Functions analyzed: 40Function                  Complexity    Paths
-──────────────────────────────────────────────
-run                             10       74
-make_response                    9      108
-url_for                          7       28
-dispatch_request                 3        4
+```bash
+$ python cli.py search "render_template" -i flask.index
 
-### Interactive Mode
-```bash$ python cli.py interactive -i project.index🔎 Search: authentication
-... instant results ...🔎 Search: database
-... more instant results ...🔎 Search: quit
-👋 Goodbye!
+🔍 Found 18 results in 0.04ms
 
----
+📄 flask/templating.py
+  ⚡ Line  135: render_template
+  ⚡ Line  150: render_template_string
 
-## Technical Deep Dive
+📄 flask/helpers.py
+  ⚡ Line  123: _render
+```
 
-**For the curious:** Here's how it actually works.
+### 📊 CFG + Complexity (Control Flow Analysis)
 
-### ArchitecturePython Files → Tree-sitter Parser → Tokenizer → Inverted Index → Search
-↓
-Persistent Storage
+```bash
+$ python cfg_analyze.py ../test_repos/flask/src/flask/app.py
 
-1. **Tree-sitter** parses Python into proper AST (not regex hacks)
-2. **Tokenizer** splits identifiers (`getUserData` → `[get, user, data]`)
-3. **Inverted Index** maps tokens to locations (O(1) lookup)
-4. **Persistence** saves to JSON (human-readable, portable)
+📊 CFG Analysis Summary
+Functions analyzed: 40
 
-### Why It's Fast
-
-**Indexing:**
-- Parallel processing ready (currently single-threaded for simplicity)
-- Efficient tokenization (handles camelCase, snake_case)
-- Smart compression (integer IDs instead of strings)
-
-**Searching:**
-- O(1) token lookup in inverted index
-- No file I/O during search (everything in memory)
-- Minimal overhead (just hash table access)
-
-### Control Flow Analysis
-
-Uses classic compiler techniques:
-- **Basic block identification** (sequences that execute together)
-- **Edge detection** (if/else, loops, returns)
-- **Path enumeration** (all possible execution paths)
-- **Cyclomatic complexity** (V(G) = E - N + 2)
-
-This isn't just search - it's static analysis.
+Function                         Blocks    Edges    Paths Complexity
+----------------------------------------------------------------------
+run                                  29       37       74         10
+make_response                        26       33      108          9
+url_for                              20       25       28          7
+dispatch_request                      8        9        4          3
+```
 
 ---
 
-## Benchmarks (Detailed)
+## Features
 
-Tested on Windows 11, Python 3.12, Intel i7, 16GB RAM.
-All measurements are 10-iteration averages.
+### 🚀 Fast Indexing
 
-### Indexing Performance
+* Indexes large codebases at **~100k LOC/sec**
+* Tested on Flask / Django / pandas
+* Stores results as a persistent on-disk index
 
-| Metric | Value |
-|--------|-------|
-| Throughput | 100k-108k lines/sec |
-| Memory peak | 6.5 MB (for 651k lines) |
-| Compression | 16-21x vs raw text |
-| Parallelization | Single-threaded (for now) |
+### ⚡ Instant Search
 
-### Search Performance
+* **Sub-millisecond queries**
+* Searches are performed in-memory using an inverted index
+* Results include file path + line + symbol type
 
-| Query | Results | Time |
-|-------|---------|------|
-| Simple ("add") | 20 | 0.030ms |
-| Medium ("render template") | 50 | 0.042ms |
-| Complex ("request response") | 100 | 0.126ms |
+### 🧠 AST-Based Understanding
 
-**Observation:** Search time scales logarithmically with result count.
+* Uses **Tree-sitter** to parse Python into an AST
+* Extracts:
 
-### Scaling Test
+  * functions
+  * classes
+  * imports
+  * docstrings (limited tokens)
 
-36x increase in codebase size (18k → 651k lines):
-- Indexing time: Linear increase (0.19s → 6.26s)
-- Search time: Sub-linear increase (0.042ms → 0.126ms)
-- Memory: Linear increase (1.12MB → 30MB index)
+### 📊 Control Flow Graphs (CFG)
 
-**Conclusion:** Scales predictably. No degradation.
+* Builds CFGs using basic blocks + edges
+* Supports:
+
+  * if / elif / else
+  * return exits
+  * loop handling (in progress)
+* Computes **cyclomatic complexity** using:
+
+  * `V(G) = E - N + 2`
 
 ---
 
-## Limitations & Trade-offs
+## How It Works (Architecture)
 
-I'm honest about what this does and doesn't do:
+```text
+Python Files
+   ↓
+Tree-sitter Parser (AST)
+   ↓
+Tokenizer (snake_case + camelCase)
+   ↓
+Inverted Index (token → locations)
+   ↓
+Search / CFG Analysis
+   ↓
+Saved Index (.index / JSON)
+```
+
+### Why It’s Fast
+
+* Uses an **inverted index** (token → list of matches)
+* Search is mostly **hash table lookup**
+* No file I/O during search (after index is loaded)
+
+---
+
+## Commands
+
+### Index a directory
+
+```bash
+python cli.py index <directory> -o <output.index>
+```
+
+### Search once
+
+```bash
+python cli.py search "<query>" -i <index-file> -l 20
+```
+
+### Interactive search
+
+```bash
+python cli.py interactive -i <index-file>
+```
+
+### Show stats
+
+```bash
+python cli.py stats -i <index-file>
+```
+
+---
+
+## Limitations (Current)
+
+Lightning Search is fast and stable, but still evolving.
 
 **Currently supports:**
-- ✅ Python only (JavaScript/Go coming in Week 5)
-- ✅ Function and class search
-- ✅ Control flow analysis
-- ✅ Complexity metrics
 
-**Doesn't yet support:**
-- ❌ Real-time file watching (must re-index)
-- ❌ Distributed indexing (single machine)
-- ❌ Cross-language analysis
-- ❌ Semantic search with embeddings (Week 4 feature)
+* ✅ Python-only indexing
+* ✅ Function/class/import search
+* ✅ CFG generation + complexity metrics
 
-**Design choices:**
-- JSON storage (readable but larger than binary)
-- Single-threaded (simple but slower than parallel)
-- In-memory search (fast but RAM-limited)
+**Not yet supported:**
 
-These are intentional trade-offs favoring simplicity and debuggability.
+* ❌ Full-text search across every line (currently symbol/token focused)
+* ❌ Real-time file watching (re-index required)
+* ❌ Cross-file CFG/dataflow (coming soon)
+* ❌ AI / natural language querying (planned)
 
 ---
 
 ## Roadmap
 
-**✅ Week 1: Foundation (DONE)**
-- Parser, indexer, search, CFG analysis
-- Tested on 651k lines
-- CLI with 5 commands
+**✅ Phase 1: Foundation (DONE)**
 
-**⏳ Week 2: Data Flow Analysis (Next)**
-- Variable tracking
-- Def-use chains
-- Reaching definitions
+* Tree-sitter parsing
+* Tokenizer + inverted index
+* CLI search + benchmarks
+* CFG analysis + complexity reporting
 
-**⏳ Week 3: Security Analysis**
-- Taint tracking (sources → sinks)
-- SQL injection detection
-- XSS vulnerability detection
+**⏳ Phase 2: Data Flow Analysis**
 
-**⏳ Week 4: AI Layer**
-- Natural language queries
-- Local LLM integration (Ollama)
-- Vulnerability explanations
+* variable tracking (def-use)
+* propagation across statements
+* cross-function tracking (basic)
 
-**⏳ Week 5: Multi-Language & Polish**
-- JavaScript support
-- Go/Rust support
-- PyPI package release
+**⏳ Phase 3: Security Analysis**
+
+* taint analysis (source → sink)
+* SQL injection detection
+* XSS detection
+* path traversal detection
+
+**⏳ Phase 4: AI Layer**
+
+* natural language queries (local LLM via Ollama)
+* vulnerability explanations
+* fix suggestions
+
+**⏳ Phase 5: Polish**
+
+* VS Code extension
+* real-time file watching
+* multi-language support (JS / Go / Rust)
+* PyPI package release (`pip install lightning-search`)
 
 ---
 
 ## Why I Built This
 
-I was searching through a 100k-line codebase for the 50th time that day.
+I was searching through a large codebase repeatedly.
 
-Grep was slow. GitHub's search kept rate-limiting me. My IDE was choking.
+* grep was slow and dumb
+* GitHub search rate-limited
+* IDE search lagged on big repos
 
-I thought: "There has to be a better way."
+So I built something that is:
 
-So I spent a few weeks building it. Learned a ton about:
-- How search engines actually work
-- Why inverted indices are magical
-- Static analysis techniques from compilers
-- How to make things fast without premature optimization
-
-Now I have a tool I actually use. And hopefully you will too.
-
----
-
-## Contributing
-
-This is a learning project, but contributions are welcome!
-
-**Currently wanted:**
-- More test cases (edge cases in Python parsing)
-- Bug reports (especially on Windows)
-- Performance improvements
-- Documentation improvements
-
-Open an issue first to discuss what you'd like to contribute.
+✅ fast enough for real-time exploration
+✅ structured enough to understand code
+✅ extensible enough for static analysis
 
 ---
 
 ## Tech Stack
 
-**Core:**
-- Python 3.9+
-- Tree-sitter (parsing)
-- Custom inverted index
+**Core**
 
-**CLI:**
-- argparse (command parsing)
-- tqdm (progress bars)
-- colorama (colors on Windows)
+* Python 3.9+
+* Tree-sitter + tree-sitter-python
+* Custom inverted index
 
-**Development:**
-- pytest (testing)
-- black (formatting)
-- psutil (benchmarking)
+**CLI**
 
----
+* argparse
+* tqdm
 
-## Credits & Inspiration
+**Dev Tools**
 
-**Built with:**
-- [Tree-sitter](https://tree-sitter.github.io/) - Incremental parsing
-- [tree-sitter-python](https://github.com/tree-sitter/tree-sitter-python) - Python grammar
-
-**Inspired by:**
-- [ripgrep](https://github.com/BurntSushi/ripgrep) - Fast text search
-- [Sourcegraph](https://about.sourcegraph.com/) - Code intelligence
-- [Semgrep](https://semgrep.dev/) - Static analysis
-
-**Academic foundations:**
-- "Compilers: Principles, Techniques, and Tools" (Dragon Book)
-- "Modern Compiler Implementation" (Tiger Book)
+* pytest (planned)
+* black (optional)
+* psutil (benchmarks)
 
 ---
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
-
-**TL;DR:** Do whatever you want with this code. Just don't sue me if it breaks.
+MIT License — see `LICENSE`.
 
 ---
 
 ## Contact
 
 **Subhrajeet Bhattacharjee**
-- GitHub: [@SubhrajeetBhattacharjee](https://github.com/SubhrajeetBhattacharjee)
-- Project: [Lightning Search](https://github.com/SubhrajeetBhattacharjee/lightning-search)
+
+* GitHub: `@SubhrajeetBhattacharjee`
+* Project: Lightning Search
 
 ---
 
-## Star History
+⭐ If you find this useful, star the repo!
 
-If you find this useful, give it a ⭐ on GitHub!
-
-Made with ⚡ and ☕ by someone who got tired of slow code search.
+```
 
 ---
 
-*P.S. - Yes, it really is this fast. Yes, the benchmarks are real. Yes, you can reproduce them. Try it yourself!*
+
+
