@@ -159,6 +159,57 @@ class CodeParser:
             'type': 'import'
         }
 
+def get_function_node(self, filepath: str, function_name: str):
+        """
+        Get the Tree-sitter AST node for a specific function.
+        
+        Args:
+            filepath: Path to Python file
+            function_name: Name of function to find
+            
+        Returns:
+            Tuple of (function_node, code_bytes) or (None, None)
+        """
+        filepath = Path(filepath)
+        
+        if not filepath.exists():
+            logger.error(f"File not found: {filepath}")
+            return None, None
+        
+        try:
+            with open(filepath, 'rb') as f:
+                code = f.read()
+            
+            tree = self.parser.parse(code)
+            root = tree.root_node
+            
+            # Find the function
+            def find_function(node):
+                if node.type == 'function_definition':
+                    name_node = node.child_by_field_name('name')
+                    if name_node:
+                        name = code[name_node.start_byte:name_node.end_byte].decode('utf8')
+                        if name == function_name:
+                            return node
+                
+                for child in node.children:
+                    result = find_function(child)
+                    if result:
+                        return result
+                
+                return None
+            
+            function_node = find_function(root)
+            
+            if function_node:
+                return function_node, code
+            else:
+                logger.warning(f"Function '{function_name}' not found in {filepath}")
+                return None, None
+                
+        except Exception as e:
+            logger.error(f"Error getting function node: {e}")
+            return None, None
 
 def main():
     """Test the parser on itself (meta!)."""
