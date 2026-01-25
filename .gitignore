@@ -28,6 +28,9 @@ Thumbs.db
 test_repos/
 .cache/
 
+# Personal study notes
+personal_notes/
+
 # Benchmarks
 benchmark_results/
 profiling/
