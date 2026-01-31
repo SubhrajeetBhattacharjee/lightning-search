@@ -6,8 +6,8 @@ from typing import Dict, List, Set, Any
 from collections import defaultdict
 import logging
 
-from parser import CodeParser
-from tokenizer import Tokenizer
+from src.core.parser import CodeParser
+from src.core.tokenizer import Tokenizer
 from tqdm import tqdm 
 
 logging.basicConfig(level=logging.INFO)

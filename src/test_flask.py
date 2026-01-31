@@ -1,4 +1,4 @@
-from indexer import CodeIndexer
+from core.indexer import CodeIndexer
 
 def main():
     print("=" * 60)

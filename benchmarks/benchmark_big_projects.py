@@ -10,8 +10,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
-from indexer import CodeIndexer
-from search import CodeSearch
+from core.indexer import CodeIndexer
+from core.search import CodeSearch
 
 
 def count_lines(directory: str):

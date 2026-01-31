@@ -118,7 +118,7 @@ class ASTVariableExtractor:
 
 def main():
     """Test variable extraction."""
-    from parser import CodeParser
+    from core.parser import CodeParser
     
     # Test code
     test_code = """

@@ -8,8 +8,8 @@ import sys
 from pathlib import Path
 from typing import List, Dict, Optional
 
-from parser import CodeParser
-from cfg_builder import CFGBuilder, ControlFlowGraph
+from src.core.parser import CodeParser
+from src.core.cfg_builder import CFGBuilder, ControlFlowGraph
 import tree_sitter_python
 
 

@@ -1,4 +1,4 @@
-from parser import CodeParser
+from core.parser import CodeParser
 
 parser = CodeParser()
 result = parser.parse_file('../examples/sample.py')

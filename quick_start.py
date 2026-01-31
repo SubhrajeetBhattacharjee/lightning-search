@@ -38,8 +38,8 @@ def main():
     
     # Import our modules directly
     try:
-        from indexer import CodeIndexer
-        from search import CodeSearch
+        from core.indexer import CodeIndexer
+        from core.search import CodeSearch
     except ImportError as e:
         print(f"\n❌ Error importing modules: {e}")
         print("Make sure you're running this with the virtual environment activated!\n")

@@ -221,7 +221,7 @@ class DataFlowAnalyzer:
         
         # If we have AST node, use the better AST-based extractor
         if function_node is not None and code is not None:
-            from variable_extractor import ASTVariableExtractor
+            from core.variable_extractor import ASTVariableExtractor
             
             # Extract with AST (more accurate!)
             ast_extractor = ASTVariableExtractor()
@@ -247,7 +247,7 @@ class DataFlowAnalyzer:
 
 def main():
     """Test variable tracking on real code."""
-    from cfg_analyzer import CFGAnalyzer
+    from core.cfg_analyzer import CFGAnalyzer
     import sys
     from pathlib import Path
     
@@ -304,7 +304,7 @@ Examples:
         return
     
    # Get AST node for better accuracy
-    from parser import CodeParser
+    from core.parser import CodeParser
     parser_for_ast = CodeParser()
     function_node, code = parser_for_ast.get_function_node(filepath, function_name)
     
@@ -333,7 +333,7 @@ Examples:
 
 def analyze_all_functions(filepath: str):
     """Analyze all functions in a file."""
-    from cfg_analyzer import CFGAnalyzer
+    from core.cfg_analyzer import CFGAnalyzer
     
     print(f"\n⚡ Data Flow Analysis - All Functions")
     print("=" * 70)
@@ -354,7 +354,7 @@ def analyze_all_functions(filepath: str):
     
     for cfg in cfgs:
         # Get AST node for this function
-        from parser import CodeParser
+        from core.parser import CodeParser
         parser_for_ast = CodeParser()
         function_node, code = parser_for_ast.get_function_node(filepath, cfg.function_name)
         
@@ -411,7 +411,7 @@ def test_on_flask():
         'run'                # Most complex
     ]
     
-    from cfg_analyzer import CFGAnalyzer
+    from core.cfg_analyzer import CFGAnalyzer
     
     for func_name in test_functions:
         print(f"\n{'─' * 70}")
@@ -423,7 +423,7 @@ def test_on_flask():
         
         if cfg:
             df_analyzer = DataFlowAnalyzer()
-            from parser import CodeParser
+            from core.parser import CodeParser
             parser_for_ast = CodeParser()
             function_node, code = parser_for_ast.get_function_node(str(flask_path), func_name)
             tracker = df_analyzer.analyze_function(cfg, function_node, code)

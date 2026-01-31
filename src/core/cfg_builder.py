@@ -396,7 +396,7 @@ class CFGBuilder:
 
 def main():
     """Test the CFG builder."""
-    from parser import CodeParser
+    from core.parser import CodeParser
     
     # Test code
     test_code = """

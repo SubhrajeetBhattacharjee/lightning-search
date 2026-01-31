@@ -2,10 +2,10 @@
 import sys
 import argparse
 from pathlib import Path
-from __version__ import __version__
-from indexer import CodeIndexer
-from search import CodeSearch
-from cfg_analyzer import CFGAnalyzer
+from src.core.__version__ import __version__
+from src.core.indexer import CodeIndexer
+from src.core.search import CodeSearch
+from src.core.cfg_analyzer import CFGAnalyzer
 
 
 def cmd_index(args):

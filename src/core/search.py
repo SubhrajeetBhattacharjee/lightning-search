@@ -1,7 +1,7 @@
 
 import time
 from typing import List, Dict, Any
-from indexer import CodeIndexer
+from src.core.indexer import CodeIndexer
 
 
 class CodeSearch:
