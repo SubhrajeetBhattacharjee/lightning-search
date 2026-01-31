@@ -159,7 +159,7 @@ class CodeParser:
             'type': 'import'
         }
 
-def get_function_node(self, filepath: str, function_name: str):
+    def get_function_node(self, filepath: str, function_name: str):
         """
         Get the Tree-sitter AST node for a specific function.
         
@@ -170,6 +170,8 @@ def get_function_node(self, filepath: str, function_name: str):
         Returns:
             Tuple of (function_node, code_bytes) or (None, None)
         """
+        from pathlib import Path
+        
         filepath = Path(filepath)
         
         if not filepath.exists():
